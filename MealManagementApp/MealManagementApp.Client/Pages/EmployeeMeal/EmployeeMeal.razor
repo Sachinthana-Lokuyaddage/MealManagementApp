@@ -1,0 +1,69 @@
+﻿@page "/employee-meals"
+@using MealManagementApp.Client.Dtos
+@using MealManagementApp.Client.Services
+@inject HttpClient Http
+@inject EmployeeMealService EmployeeMealService
+
+<PageTitle>Index</PageTitle>
+<h3>Meal Management System - Revision 001</h3>
+
+<label>Select a Day:</label>
+<input type="date" @bind="SelectedDate" />
+
+<label>Select Meal Tipe:</label>
+<select @bind="SelectedBreakTime">
+    <option value="All">All Meals</option>
+    <option value="Breakfast">Breakfast</option>
+    <option value="Lunch">Lunch</option>
+    <option value="Dinner">Dinner</option>
+</select>
+
+<button @onclick="SearchMeals">Search</button>
+
+
+@if (employeeMeals != null && employeeMeals.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>Created Time</th>
+                <th>RFID</th>
+                <th>Break Time</th>
+                <th>Station ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employeeMeal in employeeMeals)
+            {
+                <tr>
+                    <td>@employeeMeal.Id</td>
+                    <td>@employeeMeal.CreatedDateTime</td>
+                    <td>@employeeMeal.RFID</td>
+                    <td>@employeeMeal.BreakTime</td>
+                    <td>@employeeMeal.StationId</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (employeeMeals != null)
+
+{
+    <p>No meals found for the selected criteria.</p>
+}
+
+@code {
+
+    private DateTime SelectedDate = DateTime.Today;
+    private string SelectedBreakTime = "All";
+
+    private List<EmployeeMealDto> employeeMeals = new List<EmployeeMealDto>();
+
+    private async Task SearchMeals()
+    {
+        employeeMeals = await EmployeeMealService.SearchMealsAsync(SelectedDate, SelectedBreakTime);
+    }
+}
